@@ -1,0 +1,14 @@
+{%extends 'layout.html'%}
+{%block content%}
+<link rel="stylesheet" href={{cdn_css | safe}} type="text/css" />
+<script type="text/javascript" src={{cdn_js | safe}}></script>
+<div>
+    <h1>Stock Market Analysis Graph</h1>
+    <p>This page shows the stock market performance over the past six months of Google and Apple.</p>
+    <p>Each graph is can be interacted with using the toolbar to the righ.</p>
+    <p>The rectangles show the range between opening and closing prices. Green means net gain, while red means there was a net loss.</p>
+    <p>The black segment line reflects the high and low points for the stock on a given day.</p>
+</div>
+{{script1 | safe}}
+{{div1 | safe}}
+{%endblock%}
