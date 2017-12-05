@@ -1,5 +1,11 @@
 from flask import Flask, render_template, flash, redirect, request, session, abort
 import os
+from bokeh.layouts import column
+from bokeh.plotting import figure
+from pandas_datareader import data
+from bokeh.embed import components
+from bokeh.resources import CDN
+import datetime
 
 
 app = Flask(__name__)
@@ -10,13 +16,6 @@ def plot():
     if not session.get('logged_in'):
         return render_template('login.html')
     else:
-        from bokeh.layouts import column
-        from bokeh.plotting import figure
-        from pandas_datareader import data
-        from bokeh.embed import components
-        from bokeh.resources import CDN
-        import datetime
-
         """
         Script that uses pandas_datareader library to pull stock price information from Yahoo! Finance,
             then plots it to a candlestick chart using bokeh.plotting. This script compares Google and Apple.
