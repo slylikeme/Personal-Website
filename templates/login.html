@@ -1,0 +1,47 @@
+<head>
+  <title>Casey's Corner</title>
+  <link rel="stylesheet" href={{url_for('static', filename='css/login.css', type="text/css")}}
+</head>
+{% with messages = get_flashed_messages() %}
+  {% if messages %}
+    <ul class=flashes>
+    {% for message in messages %}
+      <li>{{ message }}</li>
+    {% endfor %}
+    </ul>
+  {% endif %}
+{% endwith %}
+
+{% block body %}
+{% if session['logged_in'] %}
+<p>You're logged in already!</p>
+{% else %}
+
+<div class="login">
+	<div class="login-screen">
+		<div class="app-title">
+			<h1>Login</h1>
+		</div>
+
+		<div class="login-form">
+      <form action="/login" method="POST">
+				<div class="control-group">
+  				<input type="text" class="login-field" value="" placeholder="username" name="username">
+  				<label class="login-field-icon fui-user" for="login-name"></label>
+				</div>
+
+				<div class="control-group">
+  				<input type="password" class="login-field" value="" placeholder="password" name="password">
+  				<label class="login-field-icon fui-lock" for="login-pass"></label>
+				</div>
+
+        <input type="submit" value="Log in" class="btn btn-primary btn-large btn-block">
+		       <br>
+      </form>
+		</div>
+	</div>
+</div>
+
+
+{% endif %}
+{% endblock %}
