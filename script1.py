@@ -6,7 +6,9 @@ from bokeh.embed import components
 from bokeh.resources import CDN
 import datetime
 
+
 app = Flask(__name__)
+
 
 @app.route('/plot/')
 def plot():
