@@ -87,3 +87,8 @@ input:focus {
   background-color: steelblue;
   margin: 3px;
 }
+
+.signup {
+  text-align: center;
+  color: #777;
+}

@@ -6,9 +6,84 @@ from pandas_datareader import data
 from bokeh.embed import components
 from bokeh.resources import CDN
 import datetime
+from flask_sqlalchemy import SQLAlchemy
+from send_email import send_email
+from sqlalchemy.sql import func
 
+
+#TODO HOOK UP SIGNUP PAGE TO SIGNUP.html *DONE
+#TODO HOOK UP SUCCESS PAGE TO SUCCESS.HTML *DONE
+#TODO FIX SIGNUP.HTML *DONE
+#TODO FIX SUCCESS.html *DONE
+#TODO attach login function to pull from postgres database *DONE
+#TODO FIX SIGNUP FUNCTION *DONE
+#TODO FIX SUCCESS FUNCTION *DONE
+#TODO WRITE send_email PYTHON SCRIPT AND FIX IT *DONE
+#TODO hash passwords
+#TODO clean up .css files for login, success, signup pages
 
 app = Flask(__name__)
+app.config['SQLALCHEMY_DATABASE_URI'] = 'postgresql://***********:***********@localhost/userdata'
+db = SQLAlchemy(app)
+
+
+# creates the database
+class Data(db.Model):
+    __tablename__ = "data"
+    id = db.Column(db.Integer, primary_key=True)
+    email_ = db.Column(db.String(120))
+    username_ = db.Column(db.String(30), unique=True)
+    password_ = db.Column(db.String(30))
+
+    def __init__(self, email_, username_, password_):
+        self.email_ = email_
+        self.username_ = username_
+        self.password_ = password_
+
+
+@app.route("/signup")
+def signup():
+    return render_template("signup.html")
+
+
+# uses POST method to submit email, username, password information to database
+@app.route("/success", methods=["POST"])
+def success():
+    if request.method == "POST":
+        email = request.form["email_name"]
+        username = request.form["user_name"]
+        password = request.form["password"]
+        # if statement to check if username is already in the database
+        if db.session.query(Data).filter(Data.username_ == username).count() == 0:
+            data = Data(email, username, password)
+            db.session.add(data)
+            db.session.commit()
+            # call send_email function to send user their login data
+            send_email(email, username, password)
+            return render_template("success.html")
+    return render_template("signup.html", text="That username is taken!")
+
+
+@app.route('/login', methods=['GET', 'POST'])
+def do_admin_login():
+
+    POST_USERNAME = str(request.form['username'])
+    POST_PASSWORD = str(request.form['password'])
+
+    query = db.session.query(Data).filter(Data.username_ == POST_USERNAME, Data.password_ == POST_PASSWORD )
+    result = query.first()
+    if result:
+        session['logged_in'] = True
+        return redirect('/')
+    else:
+        flash('Incorrect username/password.')
+        return render_template('login.html')
+
+
+@app.route("/logout/")
+def logout():
+    session['logged_in'] = False
+    return redirect('/')
 
 
 @app.route('/plot/')
@@ -95,24 +170,6 @@ def plot():
         cdn_js = CDN.js_files[0]
         cdn_css = CDN.css_files[0]
         return render_template('plot.html', script1=script1, div1=div1, cdn_css=cdn_css, cdn_js=cdn_js)
-
-
-@app.route('/login', methods=['POST'])
-def do_admin_login():
-    #return render_template('login.html')
-    if request.form['password'] == 'password' and request.form['username'] == 'admin':
-        session['logged_in'] = True
-        return redirect('/')
-    else:
-        flash('Incorrect username/password.')
-        return render_template('login.html')
-
-
-@app.route("/logout/")
-def logout():
-    session['logged_in'] = False
-    return redirect('/')
-    #return render_template('login.html')
 
 
 @app.route('/')
